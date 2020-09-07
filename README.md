@@ -2,7 +2,7 @@
 
 **Alignment and variant calling pipeline for the [Varitome](https://solgenomics.net/projects/varitome) project.**
 
-This pipeline is composed with [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) v5.23.0. Compatibility with different versions is not guaranteed
+This pipeline is composed with [Snakemake](https://snakemake.readthedocs.io/en/stable/index.html) v5.23.0. Compatibility with different versions is not guaranteed.
 
 ## Installation
 
@@ -47,11 +47,11 @@ For instance, to run 2 accessions (each with a variable number of sequencer runs
 }
 ```
 
-Note that the reference genome file (`something.fasta`) must exist in the same directory.
+Note that the reference genome file (e.g., `PAS014479_MAS1.0.fasta`) must exist in the same directory.
 
 ## Usage
 
-To execute a dry run prior (does not actually do anything, just prints out rules scheduled for execution), you first need a conda environment with Snakemake v5.23 installed. To create one on Sapelo2:
+To execute a dry run (does not actually do anything, just prints out rules scheduled for execution), you first need a conda environment with Snakemake installed. To create one on Sapelo2:
 
 ```bash
 module load Miniconda3/4.7.10
@@ -73,7 +73,7 @@ Execute the dry run with:
 snakemake -np --config-file "<config file>"
 ```
 
-You probably won't want to run the pipeline interactively unless your dataset is very small and you have a `tmux` or `screen` session open, as the pipeline will take several hours at minimum &mdash; but if you do, run:
+You probably won't want to run the pipeline interactively unless your dataset is very small and you have a `[tmux](https://github.com/tmux/tmux)` or `[screen](https://www.gnu.org/software/screen/)` session open, as the pipeline will take several hours at minimum &mdash; but if you do, run:
 
 ```bash
 snakemake --latency-wait 30 --restart-times 2 --configfile "<config file>" --jobs 500 --cluster "qsub -l walltime={params.walltime} -l nodes={params.nodes}:ppn={params.ppn} -l mem={params.mem} -M <your email address> -m ae"
