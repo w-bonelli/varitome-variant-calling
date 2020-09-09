@@ -1,4 +1,4 @@
-# Snakemato
+# Varitome Variant Calling
 
 **Alignment and variant calling pipeline for the [Varitome](https://solgenomics.net/projects/varitome) project.**
 

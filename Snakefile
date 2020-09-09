@@ -212,12 +212,12 @@ rule call_variants:
 		"{accession}.variants.vcf"
 	wildcard_constraints:
 		accession=accession_regex
-	threads: 20
+	threads: 40
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="24:00:00",
+		walltime="48:00:00",
 		nodes=1,
-		ppn=20,
+		ppn=40,
 		mem="58gb"
 	shell:
 		"""
