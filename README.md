@@ -70,7 +70,7 @@ source activate <myenv>
 Execute the dry run with:
 
 ```bash
-snakemake -np --config-file "<config file>"
+snakemake -np --configfile "<config file>"
 ```
 
 You probably won't want to run the pipeline interactively unless your dataset is very small and you have a `[tmux](https://github.com/tmux/tmux)` or `[screen](https://www.gnu.org/software/screen/)` session open, as the pipeline will take several hours at minimum &mdash; but if you do, run:
