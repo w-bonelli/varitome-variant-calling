@@ -78,7 +78,7 @@ def get_depth(bam_file, depth_file=None, k=False, v=False):
     open_temp_file.close()
 
     #Write every read's depth to temp file
-    subprocess.call("docker exec -it bio_c sh -c 'samtools depth -a %s > %s'"
+    subprocess.call("singularity exec bio_c.sif sh -c 'samtools depth -a %s > %s'"
                      % ("/bio/" + accession + ".bam", "/bio/" + temp_file_base_name), 
                      shell=True)
 
