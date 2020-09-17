@@ -1,7 +1,7 @@
 import sys, os, getopt
 import subprocess
 import random
-import docker_tools
+from pathlib import Path
 
 usage = """
 Outputs the average read depth of a bam file. The average read depth is found
@@ -30,78 +30,35 @@ Parameters:
 
 
 def get_depth(bam_file, depth_file=None, k=False, v=False):
-    mount_directory = os.path.dirname(bam_file)
-    docker_tools.check_container_status(mount_directory)
-    mount_directory += '/'
+    if os.path.exists(depth_file):
+        raise ValueError(f"Output file '{depth_file}' already exists")
 
-    already_parsed = False
-    if depth_file is not None and depth_file.endswith(".txt") and os.path.exists(depth_file):
-        if v: print("Checking if %s has already been parsed" % bam_file)
-        open_depth_file = open(depth_file, 'r')
-        line = open_depth_file.readline()
-        while line:
-            bam_name = line.split(':')[0]
-            if bam_file.split('/')[-1] == bam_name:
-                already_parsed = True
-            line = open_depth_file.readline()
-        open_depth_file.close()
-    else:
-        depth_file = mount_directory + "bamdepths.txt"
-        if os.path.exists(depth_file):
-            open_depth_file = open(depth_file, 'r')
-            line = open_depth_file.readline()
-            while line:
-                bam_name = line.split(':')[0]
-                if bam_file.split('/')[-1] == bam_name:
-                    already_parsed = True
-                line = open_depth_file.readline()
-            open_depth_file.close()
+    print(f"Getting read depth of {bam_file}")
 
-    if already_parsed:
-        print("\n%s has already been parsed. Its read depth is in %s\n" 
-                % (bam_file, depth_file))
-        return 1
-    
-    if v: print("Opening depth file at %s" % depth_file)
-    depth_file_exists = os.path.exists(depth_file)
-    open_depth_file = open(depth_file, "a+")
-    
-    if v: print("Getting read depth of %s" % bam_file)
-    #Prepare temp file info
     accession = bam_file.split('/')[-1][0:-4]
     random_suffix = str(random.randint(100000,999999))
-    temp_file_base_name = 'temp' + accession + '-' + random_suffix
-    temp_file = mount_directory + temp_file_base_name
+    temp_file = 'temp' + accession + '-' + random_suffix
 
-    #Create temp file
-    open_temp_file = open(temp_file, 'x')
-    open_temp_file.close()
+    with open(temp_file, 'x') as temp, open(depth_file, "a+") as output:
+	    subprocess.call("singularity exec bio_c.sif sh -c 'samtools depth -a %s > %s'"
+			     % (bam_file, temp_file), 
+			     shell=True)
 
-    #Write every read's depth to temp file
-    subprocess.call("singularity exec bio_c.sif sh -c 'samtools depth -a %s > %s'"
-                     % ("/bio/" + accession + ".bam", "/bio/" + temp_file_base_name), 
-                     shell=True)
+	    sum_of_read_depths = 0
+	    position_count = 0
+	    for line in temp:
+		read_depth = int(line.split('\t')[2])
+		sum_of_read_depths += read_depth
+		position_count += 1
 
-    open_temp_file = open(temp_file, 'r')
-    sum_of_read_depths = 0
-    position_count = 0
-    for line in open_temp_file:
-        read_depth = int(line.split('\t')[2])
-        sum_of_read_depths += read_depth
-        position_count += 1
-    open_temp_file.close()
+	    if not k:
+		os.remove(temp_file)
 
-    if not k:
-        os.remove(temp_file)
-
-    average_read_depth = sum_of_read_depths / position_count
-    open_depth_file.write(accession + ".bam:" + str(average_read_depth) + '\n')
-
-    open_depth_file.close()
-    
-    print("\nAverage read depth of %s is %f" % (bam_file, average_read_depth))
-    print("Average read depth written to %s\n" % depth_file)
-    return 0
+	    average_read_depth = sum_of_read_depths / position_count
+	    output.write(accession + ".bam:" + str(average_read_depth) + '\n')
+	    
+	    print(f"Average read depth of '{bam_file}' is {average_read_depth}")
+	    return 0
 
 
 def main(argv):
