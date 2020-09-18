@@ -1,0 +1,15 @@
+rule all:
+	input: [f"{accession}.depth.txt" for accession in config["accession"]]
+
+rule depth:
+	input: expand("{accession}.bam", accession=config["accessions"])
+	output: expand("{accession}.depth.txt", accession=config["accessions"])
+	params:
+		walltime="04:00:00",
+		nodes=1,
+		ppn=20,
+		mem="40gb"
+	shell:
+		"""
+		singularity exec bio_c.sif samtools depth -a {input} > {output}
+		"""

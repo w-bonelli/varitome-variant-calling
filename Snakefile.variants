@@ -93,7 +93,7 @@ rule align:
 		speedseq align -M 60 -t {threads} -i -R '{params.readgroup}' -o '{wildcards.accession}' {params.reference} $one $two
 		"""
 
-rule detect_breakpoints:
+rule call_variants_lumpy:
 	input:
 		bam="align_{accession}/{accession}.bam",
 		splitters="align_{accession}/{accession}.splitters.bam",
@@ -203,7 +203,7 @@ rule create_reference_sequence_dictionary:
 		gatk CreateSequenceDictionary -R {params.reference}
 		"""
 
-rule call_variants:
+rule call_variants_gatk:
 	input:
 		index=f"{config['reference']}.fasta.fai",
 		dict=f"{config['reference']}.dict",
