@@ -47,7 +47,7 @@ source activate <myenv>
 
 ## Pipelines
 
-### Variants
+### Variant Calling
 
 The `Snakefile.variants` pipeline involves the following steps:
 
@@ -157,7 +157,7 @@ snakemake --snakefile Snakefile.variants  --latency-wait 30 --restart-times 2 --
 TODO
 ```
 
-### Depths
+### Read Depths
 
 The `Snakefile.depths` pipeline calculates average read depths for a collection of `.bam` files. 
  
