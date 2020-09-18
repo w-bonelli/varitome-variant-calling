@@ -15,18 +15,18 @@ rule depth:
 		"""
 
 rule mean_depth:
-    input:
-        "{accession}.depth.txt"
-    output:
-        "{accession}.depth.average.txt",
-        touch("{accession}.depth.average.done")
-    params:
+	input:
+		"{accession}.depth.txt"
+	output:
+		"{accession}.depth.average.txt",
+		touch("{accession}.depth.average.done")
+	params:
 		walltime="02:00:00",
 		nodes=1,
 		ppn=1,
 		mem="20gb"
 	run:
-        from utils import avg_read_depth
-        import os
-        avg_read_depth(input, output)
-        os.remove(input)
+		from utils import avg_read_depth
+		import os
+		avg_read_depth(input, output)
+		os.remove(input)
