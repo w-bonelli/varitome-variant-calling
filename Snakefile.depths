@@ -2,8 +2,8 @@ rule all:
 	input: [f"{accession}.depth.txt" for accession in config["accessions"]]
 
 rule depth:
-	input: expand("{accession}.bam", accession=config["accessions"])
-	output: expand("{accession}.depth.txt", accession=config["accessions"])
+	input: "{accession}.bam"
+	output: "{accession}.depth.txt"
 	params:
 		walltime="04:00:00",
 		nodes=1,
