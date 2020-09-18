@@ -15,7 +15,8 @@ rule depth:
 		"""
 
 rule mean_depth:
-    input: "{accession}.depth.txt"
+    input:
+        "{accession}.depth.txt"
     output:
         "{accession}.depth.average.txt",
         touch("{accession}.depth.average.done")
