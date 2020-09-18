@@ -118,6 +118,6 @@ snakemake --latency-wait 30 --restart-times 2 --configfile "config.json" --jobs 
 TODO
 ```
 
-## Nathan
+## Utils
 
-Various utilities carried over from previous collaborator.
+Various utilities carried over from previous collaborator Nathan.

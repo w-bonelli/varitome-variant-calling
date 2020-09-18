@@ -4,5 +4,10 @@
 *.fastq
 *.bam
 *.vcf
-*.e[0-9][0-9][0-9][0-9][0-9][0-9][0-9]
+
+# dev environment
+.idea
+venv
+
+# Torque/Moab job ids
 *.e[0-9][0-9][0-9][0-9][0-9][0-9][0-9]
