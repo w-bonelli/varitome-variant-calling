@@ -26,7 +26,7 @@ rule mean_depth:
 		ppn=1,
 		mem="20gb"
 	run:
-	    from utils import avg_read_depth
-	    import os
-	    avg_read_depth(input, output)
-	    os.remove(input)
+        from utils import avg_read_depth
+        import os
+        avg_read_depth(input, output)
+        os.remove(input)
