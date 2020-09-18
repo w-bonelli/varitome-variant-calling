@@ -16,7 +16,7 @@ def avg_read_depth(bam_file, depth_file):
 
     print(f"Getting average read depth of '{bam_file}'...")
 
-    with open(depth_file, 'x') as depth, open(output_file, "a+") as output:
+    with open(depth_file, 'r') as depth, open(output_file, "a+") as output:
         depth_sum = 0
         position = 0
 
