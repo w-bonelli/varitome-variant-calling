@@ -8,11 +8,14 @@
 
 - [Installation](#installation)
 - [Prerequisites](#prerequisites)
+- [Pipelines](#pipelines)
+  - [Variants](#variants)
+    - [Configuration](#configuration)
     - [Usage](#usage)
       - [Torque/Moab (PBS)](#torquemoab-pbs)
       - [Slurm](#slurm)
   - [Depths](#depths)
-    - [Configuration](#configuration)
+    - [Configuration](#configuration-1)
     - [Usage](#usage-1)
 - [Utils](#utils)
 
@@ -40,7 +43,7 @@ If an appropriate conda environment already exists, just run:
 ```bash
 module load Miniconda3/4.7.10
 source activate <myenv>
-``
+```
 
 ## Pipelines
 
