@@ -28,3 +28,4 @@ def avg_read_depth(bam_file, depth_file):
         mean_depth = depth_sum / position
         output.write(accession + ".bam:" + str(mean_depth) + '\n')
         print(f"Average read depth of '{bam_file}' is {mean_depth}.")
+
