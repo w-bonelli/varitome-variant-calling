@@ -26,5 +26,4 @@ rule mean_depth:
 		mem="20gb"
 	run:
 		from utils import avg_read_depth
-		import os
 		avg_read_depth(input.bam, input.depth)
