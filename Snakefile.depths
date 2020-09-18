@@ -1,5 +1,5 @@
 rule all:
-	input: [f"{accession}.depth.txt" for accession in config["accession"]]
+	input: [f"{accession}.depth.txt" for accession in config["accessions"]]
 
 rule depth:
 	input: expand("{accession}.bam", accession=config["accessions"])

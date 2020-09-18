@@ -125,7 +125,7 @@ Several command line arguments are passed to Snakemake:
 - `--jobs`: maximum number of concurrent jobs submitted to the cluster scheduler
 - `--cluster`: the command to use when submitting each job to the cluster scheduler; parameters (e.g., `params.walltime`) are specified in `Snakefile` on a per-rule basis
 
-These options can be reconfigured as needed.
+These options can be reconfigured as needed. Note that if the pipeline has run previously in the same directory, you may need to execute a dry run with extra flag `--unlock` to release the directory lock before rerunning.
 
 To submit the pipeline to Sapelo2 as a batch job, simply embed the command above in a job submission script (several examples follow).
 
@@ -189,6 +189,15 @@ To execute the pipeline interactively (this should be done from an interactive j
 ```bash
 snakemake --snakefile Snakefile.depths --latency-wait 30 --restart-times 2 --configfile "<config file>" --jobs 500 --cluster "qsub -l walltime={params.walltime} -l nodes={params.nodes}:ppn={params.ppn} -l mem={params.mem} -M <your email address> -m ae"
 ```
+
+Several command line arguments are passed to Snakemake:
+
+- `--latency-wait`: seconds to wait after each rule completes before checking for expected output files (compensates for filesystem latency)
+- `--restart-times`: times to restart each rule if it fails
+- `--jobs`: maximum number of concurrent jobs submitted to the cluster scheduler
+- `--cluster`: the command to use when submitting each job to the cluster scheduler; parameters (e.g., `params.walltime`) are specified in `Snakefile` on a per-rule basis
+
+These options can be reconfigured as needed. Note that if the pipeline has run previously in the same directory, you may need to execute a dry run with extra flag `--unlock` to release the directory lock before rerunning.
 
 ## Utils
 
