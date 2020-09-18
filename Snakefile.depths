@@ -1,15 +1,31 @@
 rule all:
-	input: [f"{accession}.depth.txt" for accession in config["accessions"]]
+	input: [f"{accession}.depth.average.txt" for accession in config["accessions"]]
 
 rule depth:
 	input: "{accession}.bam"
 	output: "{accession}.depth.txt"
 	params:
-		walltime="04:00:00",
+		walltime="02:00:00",
 		nodes=1,
 		ppn=1,
-		mem="40gb"
+		mem="20gb"
 	shell:
 		"""
 		singularity exec bio_c.sif samtools depth -a {input} > {output}
 		"""
+
+rule mean_depth:
+    input: "{accession}.depth.txt"
+    output:
+        "{accession}.depth.average.txt",
+        touch("{accession}.depth.average.done")
+    params:
+		walltime="02:00:00",
+		nodes=1,
+		ppn=1,
+		mem="20gb"
+	run:
+	    from utils import avg_read_depth
+	    import os
+	    avg_read_depth(input, output)
+	    os.remove(input)

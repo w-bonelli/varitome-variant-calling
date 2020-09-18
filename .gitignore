@@ -8,6 +8,7 @@
 # dev environment
 .idea
 venv
+__pycache__
 
 # Torque/Moab job ids
 *.e[0-9][0-9][0-9][0-9][0-9][0-9][0-9]
