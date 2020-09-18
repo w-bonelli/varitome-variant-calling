@@ -17,6 +17,7 @@
   - [Read Depths](#read-depths)
     - [Configuration](#configuration-1)
     - [Usage](#usage-1)
+      - [Torque/MOAB](#torquemoab)
 - [Utils](#utils)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
