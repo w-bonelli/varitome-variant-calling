@@ -5,15 +5,16 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [Varitome Variant Calling](#varitome-variant-calling)
-  - [Installation](#installation)
-  - [Pipelines](#pipelines)
-    - [Variants](#variants)
-      - [Configuration](#configuration)
-      - [Usage](#usage)
-        - [Torque/Moab (PBS)](#torquemoab-pbs)
-        - [Slurm](#slurm)
-  - [Utils](#utils)
+
+- [Installation](#installation)
+- [Prerequisites](#prerequisites)
+    - [Usage](#usage)
+      - [Torque/Moab (PBS)](#torquemoab-pbs)
+      - [Slurm](#slurm)
+  - [Depths](#depths)
+    - [Configuration](#configuration)
+    - [Usage](#usage-1)
+- [Utils](#utils)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -165,9 +166,8 @@ This pipeline accepts a configuration file with schema:
 {
   "accessions":  [
       "<accession 1>",
-      "<accession 2>",
-      ...
-  ],
+      "<accession 2>"
+  ]
 }
 ```
 

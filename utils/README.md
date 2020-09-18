@@ -1,3 +1,29 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [find_SVs](#find_svs)
+  - [Dependencies](#dependencies)
+    - [python 3.0 or higher](#python-30-or-higher)
+    - [docker](#docker)
+  - [Using main.py](#using-mainpy)
+  - [Understanding individual commands and their files](#understanding-individual-commands-and-their-files)
+    - [docker_tools.py](#docker_toolspy)
+      - [get_mount_location](#get_mount_location)
+      - [restart_docker_container(mount_directory)](#restart_docker_containermount_directory)
+      - [check_container_status(mount_directory)](#check_container_statusmount_directory)
+    - [merge_bams.py](#merge_bamspy)
+      - [get_accession.py](#get_accessionpy)
+      - [merge_bam_list.py](#merge_bam_listpy)
+    - [get_depth.py](#get_depthpy)
+    - [get_vcfs.py](#get_vcfspy)
+    - [remove_chr00.py](#remove_chr00py)
+    - [unknown_N_filter](#unknown_n_filter)
+    - [get_known_data.py](#get_known_datapy)
+    - [filter_vcfs.py](#filter_vcfspy)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # find_SVs
 find_Svs is a program that acts as a pipeline for finding structural variants. The program is designed to do the following:
 1. merge BAM files
