@@ -1,7 +1,5 @@
 # Varitome Variant Calling
 
-**Alignment, variant calling, and analysis for the [Varitome](https://solgenomics.net/projects/varitome) project.**
-
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
