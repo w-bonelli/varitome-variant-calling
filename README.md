@@ -128,7 +128,11 @@ These options can be reconfigured as needed. Note that if the pipeline has run p
 
 To submit the pipeline to Sapelo2 as a batch job, simply embed the command above in a job submission script (several examples follow).
 
-##### Torque/Moab (PBS)
+##### Sample Job Scripts
+
+Depending on the size of your dataset you may need to tune cluster resources on a per-rule basis.
+
+**Torque/Moab (PBS)**
 
 ```
 #PBS -S /bin/bash
@@ -150,7 +154,7 @@ ulimit -c unlimited
 snakemake --snakefile Snakefile.variants  --latency-wait 30 --restart-times 2 --configfile "config.json" --jobs 500 --cluster "qsub -l walltime={params.walltime} -l nodes={params.nodes}:ppn={params.ppn} -l mem={params.mem} -M <your email address> -m ae"
 ```
 
-##### Slurm
+**Slurm**
 
 ```
 TODO
