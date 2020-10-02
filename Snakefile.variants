@@ -40,7 +40,6 @@ rule merge_fastqs:
 
 rule trim_fastqs:
 	input:
-		flag="merge_accessions.done",
 		one="{accession}_1.fastq",
 		two="{accession}_2.fastq"
 	output:
@@ -93,7 +92,7 @@ rule align:
 		speedseq align -M 60 -t {threads} -i -R '{params.readgroup}' -o '{wildcards.accession}' {params.reference} $one $two
 		"""
 
-rule call_variants_lumpy:
+rule lumpy_variants:
 	input:
 		bam="align_{accession}/{accession}.bam",
 		splitters="align_{accession}/{accession}.splitters.bam",
@@ -203,7 +202,7 @@ rule create_reference_sequence_dictionary:
 		gatk CreateSequenceDictionary -R {params.reference}
 		"""
 
-rule call_variants_gatk:
+rule haplotype_caller:
 	input:
 		index=f"{config['reference']}.fasta.fai",
 		dict=f"{config['reference']}.dict",
@@ -212,13 +211,13 @@ rule call_variants_gatk:
 		"{accession}.variants.vcf"
 	wildcard_constraints:
 		accession=accession_regex
-	threads: 40
+	threads: 20
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="48:00:00",
+		walltime="100:00:00",
 		nodes=1,
-		ppn=40,
-		mem="58gb"
+		ppn=20,
+		mem="40gb"
 	shell:
 		"""
 		module load GATK/4.1.6.0-GCCcore-8.2.0-Java-1.8
@@ -234,15 +233,15 @@ rule combine_variants:
 	params:
 		reference=f"{config['reference']}.fasta",
 		variants=lambda wildcards, input: " ".join([f"-V {variant}" for variant in input]),
-		walltime="48:00:00",
+		walltime="200:00:00",
 		nodes=1,
 		ppn=1,
-		mem="58gb"
+		mem="50gb"
 	shell:
 		"""
 		module load GATK/4.1.6.0-GCCcore-8.2.0-Java-1.8
 		ulimit -c unlimited
-		gatk CombineGVCFs -R {params.reference} {params.variants} -O {output}
+		java -Xmx25g -jar /usr/local/apps/eb/GATK/4.1.6.0-GCCcore-8.2.0-Java-1.8/gatk-package-4.1.6.0-local.jar CombineGVCFs -R {params.reference} {params.variants} -O {output}
 		"""
 
 rule joint_genotype:
@@ -252,10 +251,10 @@ rule joint_genotype:
 		"combined.genotyped.vcf"
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="48:00:00",
+		walltime="120:00:00",
 		nodes=1,
 		ppn=1,
-		mem="58gb"
+		mem="50gb"
 	shell:
 		"""
 		module load GATK/4.1.6.0-GCCcore-8.2.0-Java-1.8
@@ -270,10 +269,10 @@ rule select_variants:
 		"combined.genotyped.selected.vcf"
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="48:00:00",
+		walltime="120:00:00",
 		nodes=1,
 		ppn=1,
-		mem="58gb"
+		mem="50gb"
 	shell:
 		"""
 		module load GATK/4.1.6.0-GCCcore-8.2.0-Java-1.8
@@ -288,10 +287,10 @@ rule filter_variants:
 		"combined.genotyped.selected.filtered.vcf"
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="48:00:00",
+		walltime="120:00:00",
 		nodes=1,
 		ppn=1,
-		mem="58gb"
+		mem="50gb"
 	shell:
 		"""
 		module load GATK/4.1.6.0-GCCcore-8.2.0-Java-1.8
@@ -306,10 +305,10 @@ rule recode_variants:
 		"combined.genotyped.selected.filtered.recoded.vcf"
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="48:00:00",
+		walltime="120:00:00",
 		nodes=1,
 		ppn=1,
-		mem="58gb"
+		mem="50gb"
 	shell:
 		"""
 		module load VCFtools/0.1.15-foss-2016b-Perl-5.24.1
