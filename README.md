@@ -1,7 +1,5 @@
 # Varitome Variant Calling
 
-**Alignment, variant calling, and analysis for the [Varitome](https://solgenomics.net/projects/varitome) project.**
-
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
@@ -113,7 +111,7 @@ To execute a dry run (does not actually do anything, just prints out rules sched
 snakemake --snakefile Snakefile.variants -np --configfile "<config file>"
 ```
 
-You probably won't want to run the pipeline interactively unless your dataset is very small and you have a `[tmux](https://github.com/tmux/tmux)` or `[screen](https://www.gnu.org/software/screen/)` session open, as the pipeline will take several hours at minimum &mdash; but if you do, run:
+You probably won't want to run the pipeline interactively unless your dataset is very small and you have a [tmux](https://github.com/tmux/tmux) or [screen](https://www.gnu.org/software/screen/) session open, as the pipeline will take several hours at minimum &mdash; but if you do, run:
 
 ```bash
 snakemake --snakefile Snakefile.variants --latency-wait 30 --restart-times 2 --configfile "<config file>" --jobs 500 --cluster "qsub -l walltime={params.walltime} -l nodes={params.nodes}:ppn={params.ppn} -l mem={params.mem} -M <your email address> -m ae"
