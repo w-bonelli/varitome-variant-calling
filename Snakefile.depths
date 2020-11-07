@@ -11,7 +11,7 @@ rule depth:
 		mem="20gb"
 	shell:
 		"""
-		singularity exec bio_c.sif samtools depth -a {input} > {output}
+		singularity exec shub://w-bonelli/varitome-variant-calling samtools depth -a {input} > {output}
 		"""
 
 rule mean_depth:

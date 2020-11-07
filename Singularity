@@ -2,19 +2,19 @@ Bootstrap: docker
 From: ubuntu:16.04
 
 %labels
-	Auther Angelo Williams
-	Maintainer Manoj Sapkota, Wes Bonelli
+    Auther Angelo Williams
+    Maintainer Manoj Sapkota, Wes Bonelli
 
 %setup
-	mkdir bio
+    mkdir bio
 
 %post
-	apt-get update && apt-get install -y \
+    apt-get update && apt-get install -y \
     software-properties-common \
     python-software-properties && \
     add-apt-repository "ppa:webupd8team/java" && \
     add-apt-repository "ppa:openjdk-r/ppa" && \
-	apt-get update && apt-get install -y \
+    apt-get update && apt-get install -y \
     build-essential \
     cmake \
     gpp \
