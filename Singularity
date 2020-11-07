@@ -5,9 +5,6 @@ From: ubuntu:16.04
     Auther Angelo Williams
     Maintainer Manoj Sapkota, Wes Bonelli
 
-%setup
-    mkdir bio
-
 %post
     apt-get update && apt-get install -y \
     software-properties-common \
@@ -21,6 +18,7 @@ From: ubuntu:16.04
     gcc \
     git \
     make \
+    openjdk-8* \
     python2.7 \
     python-dev \
     python-yaml \
@@ -56,12 +54,25 @@ From: ubuntu:16.04
     cd samtools-1.8 && \
     ./configure && make && make install
 
+    # vcftools
+    git clone https://github.com/vcftools/vcftools.git && \
+    cd vcftools && \
+    ./autogen.sh && \
+    ./configure && \
+    make && \
+    make install
+
     # bedtools
     curl -OL https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz && \
     tar -xvf bedtools-2.27.1.tar.gz && \
     cd bedtools2 && \
     make && \
     cp bin/* /usr/local/bin/
+
+    # gatk
+    git clone https://github.com/broadinstitute/gatk.git && \
+    cd gatk && \
+    ./gradlew bundle
 
     # picard
     curl -OL https://github.com/broadinstitute/picard/releases/download/2.18.5/picard.jar && \
@@ -71,7 +82,12 @@ From: ubuntu:16.04
     git clone --recursive https://github.com/arq5x/lumpy-sv && \
     cd lumpy-sv && \
     make && \
-    cp bin/* /usr/local/bin/.
+    cp bin/* /usr/local/bin/. &&
+
+    # speedseq
+    git clone --recursive https://github.com/hall-lab/speedseq && \
+    cd speedseq && \
+    make
 
     # pysam, numpy, scipy
     pip3 install --upgrade pip && \
