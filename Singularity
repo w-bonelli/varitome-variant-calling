@@ -93,8 +93,9 @@ From: ubuntu:16.04
     cd speedseq && \
     make
 
-    # pysam, numpy, scipy
+    # python packages
     pip3 install --upgrade pip && \
-    pip3 install pysam && \
-    pip3 install numpy && \
-    pip3 install scipy
+    pip3 install pysam \
+    numpy \
+    scipy \
+    parallel-fastq-dump
