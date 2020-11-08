@@ -46,6 +46,13 @@ From: ubuntu:16.04
     cd gatk && \
     ./gradlew bundle
 
+    # trimmomatic
+    git clone https://github.com/timflutre/trimmomatic.git && \
+    cd trimmomatic && \
+    make && \
+    make check && \
+    make install
+
     # sambamba
     curl -OL https://github.com/biod/sambamba/releases/download/v0.6.7/sambamba_v0.6.7_linux.tar.bz2 && \
     tar -xvf sambamba_v0.6.7_linux.tar.bz2 && \

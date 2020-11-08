@@ -23,7 +23,7 @@ rule dump_fastqs:
 	run:
 		for runs in config["accessions"].values():
 			for run in runs:
-				shell("module load Miniconda3/4.7.10 && source activate alignment && ulimit -c unlimited && parallel-fastq-dump --split-files -t {threads} -s {run}")
+				shell("ulimit -c unlimited && parallel-fastq-dump --split-files -t {threads} -s {run}")
 
 rule merge_fastqs:
 	input: "dump_fastqs.done"
