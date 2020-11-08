@@ -37,6 +37,15 @@ From: ubuntu:16.04
     unzip \
     python3-pip
 
+    # git lfs
+    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
+    apt-get install git-lfs
+
+    # gatk
+    git clone https://github.com/broadinstitute/gatk.git && \
+    cd gatk && \
+    ./gradlew bundle
+
     # sambamba
     curl -OL https://github.com/biod/sambamba/releases/download/v0.6.7/sambamba_v0.6.7_linux.tar.bz2 && \
     tar -xvf sambamba_v0.6.7_linux.tar.bz2 && \
@@ -68,11 +77,6 @@ From: ubuntu:16.04
     cd bedtools2 && \
     make && \
     cp bin/* /usr/local/bin/
-
-    # gatk
-    git clone https://github.com/broadinstitute/gatk.git && \
-    cd gatk && \
-    ./gradlew bundle
 
     # picard
     curl -OL https://github.com/broadinstitute/picard/releases/download/2.18.5/picard.jar && \

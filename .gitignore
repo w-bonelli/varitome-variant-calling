@@ -4,6 +4,7 @@
 *.fastq
 *.bam
 *.vcf
+*.sif
 
 # dev environment
 .idea
