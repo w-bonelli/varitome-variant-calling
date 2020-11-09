@@ -180,7 +180,7 @@ rule haplotype_caller:
 	threads: 20
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="100:00:00",
+		walltime="168:00:00",
 		nodes=1,
 		ppn=20,
 		mem="40gb"
@@ -194,7 +194,7 @@ rule combine_variants:
 	params:
 		reference=f"{config['reference']}.fasta",
 		variants=lambda wildcards, input: " ".join([f"-V {variant}" for variant in input]),
-		walltime="200:00:00",
+		walltime="168:00:00",
 		nodes=1,
 		ppn=1,
 		mem="50gb"
@@ -207,7 +207,7 @@ rule joint_genotype:
 		"combined.genotyped.vcf"
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="120:00:00",
+		walltime="168:00:00",
 		nodes=1,
 		ppn=1,
 		mem="50gb"
@@ -220,7 +220,7 @@ rule select_variants:
 		"combined.genotyped.selected.vcf"
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="120:00:00",
+		walltime="168:00:00",
 		nodes=1,
 		ppn=1,
 		mem="50gb"
@@ -233,7 +233,7 @@ rule filter_variants:
 		"combined.genotyped.selected.filtered.vcf"
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="120:00:00",
+		walltime="168:00:00",
 		nodes=1,
 		ppn=1,
 		mem="50gb"
@@ -246,7 +246,7 @@ rule recode_variants:
 		"combined.genotyped.selected.filtered.recoded.vcf"
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="120:00:00",
+		walltime="168:00:00",
 		nodes=1,
 		ppn=1,
 		mem="50gb"
