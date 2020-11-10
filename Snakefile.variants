@@ -198,7 +198,7 @@ rule combine_variants:
 		nodes=1,
 		ppn=1,
 		mem="50gb"
-	shell: "singularity exec shub://w-bonelli/varitome-variant-calling java -Xmx25g -jar /usr/local/apps/eb/GATK/4.1.6.0-GCCcore-8.2.0-Java-1.8/gatk-package-4.1.6.0-local.jar CombineGVCFs -R {params.reference} {params.variants} -O {output}"
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling java CombineGVCFs -R {params.reference} {params.variants} -O {output}"
 
 rule joint_genotype:
 	input:
@@ -211,7 +211,7 @@ rule joint_genotype:
 		nodes=1,
 		ppn=1,
 		mem="50gb"
-	shell: "singularity exec shub://w-bonelli/varitome-variant-calling gatk GenotypeGVCFs -R {params.reference} -V {input} -O {output}"
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /gatk/gatk GenotypeGVCFs -R {params.reference} -V {input} -O {output}"
 
 rule select_variants:
 	input:
@@ -224,7 +224,7 @@ rule select_variants:
 		nodes=1,
 		ppn=1,
 		mem="50gb"
-	shell: "singularity exec shub://w-bonelli/varitome-variant-calling gatk SelectVariants -R {params.reference} -V {input} --select-type-to-include SNP -O {output}"
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /gatk/gatk SelectVariants -R {params.reference} -V {input} --select-type-to-include SNP -O {output}"
 
 rule filter_variants:
 	input:
@@ -237,7 +237,7 @@ rule filter_variants:
 		nodes=1,
 		ppn=1,
 		mem="50gb"
-	shell: "singularity exec shub://w-bonelli/varitome-variant-calling gatk VariantFiltration -R {params.reference} -V {input} -O {output} --filter-name 'Default_recommended' --filter-expression 'QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum  < -12.5 || ReadPosRankSum < -8.0' -O"
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /gatk/gatk VariantFiltration -R {params.reference} -V {input} -O {output} --filter-name 'Default_recommended' --filter-expression 'QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum  < -12.5 || ReadPosRankSum < -8.0' -O"
 
 rule recode_variants:
 	input:
