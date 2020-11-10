@@ -55,7 +55,7 @@ rule trim_fastqs:
 		nodes=1,
 		ppn=20,
 		mem="40gb"
-	shell: "singularity exec shub://w-bonelli/varitome-variant-calling time java -jar /usr/local/apps/eb/Trimmomatic/0.36-Java-1.8.0_144/trimmomatic-0.36.jar PE -threads {threads} {input.one} {input.two} {output.one} {output.one_unpaired} {output.two} {output.two_unpaired} SLIDINGWINDOW:4:20 MINLEN:20"
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling time java -jar /usr/local/bin/trimmomatic/0.36-Java-1.8.0_144/trimmomatic-0.36.jar PE -threads {threads} {input.one} {input.two} {output.one} {output.one_unpaired} {output.two} {output.two_unpaired} SLIDINGWINDOW:4:20 MINLEN:20"
 
 rule align:
 	input:
@@ -127,7 +127,7 @@ rule create_read_groups:
 		nodes=1,
 		ppn=1,
 		mem="20gb"
-	shell: "singularity exec shub://w-bonelli/varitome-variant-calling java -classpath /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144 -jar /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144/picard.jar AddOrReplaceReadGroups INPUT={input} OUTPUT={output} RGID={wildcards.accession} RGSM={wildcards.accession} RGLB={wildcards.accession} RGPL=ILLUMINA RGPU=ignore"
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling java -jar /usr/local/bin/picard.jar AddOrReplaceReadGroups INPUT={input} OUTPUT={output} RGID={wildcards.accession} RGSM={wildcards.accession} RGLB={wildcards.accession} RGPL=ILLUMINA RGPU=ignore"
 
 rule mark_duplicates_and_build_index:
 	input:
@@ -144,8 +144,8 @@ rule mark_duplicates_and_build_index:
 		mem="40gb"
 	shell:
 		"""
-		singularity exec shub://w-bonelli/varitome-variant-calling java -classpath /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144 -jar /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144/picard.jar MarkDuplicates INPUT={input} OUTPUT={output.bam} METRICS_FILE={output.met}
-		singularity exec shub://w-bonelli/varitome-variant-calling java -classpath /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144 -jar /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144/picard.jar BuildBamIndex INPUT={output.bam}
+		singularity exec shub://w-bonelli/varitome-variant-calling java -jar /usr/local/bin/picard.jar MarkDuplicates INPUT={input} OUTPUT={output.bam} METRICS_FILE={output.met}
+		singularity exec shub://w-bonelli/varitome-variant-calling java -jar /usr/local/bin/picard.jar BuildBamIndex INPUT={output.bam}
 		"""
 
 rule create_reference_index:
@@ -166,7 +166,7 @@ rule create_reference_sequence_dictionary:
 		nodes=1,
 		ppn=1,
 		mem="20gb"
-	shell: "singularity exec shub://w-bonelli/varitome-variant-calling gatk CreateSequenceDictionary -R {params.reference}"
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /opt/gatk/gatk CreateSequenceDictionary -R {params.reference}"
 
 rule haplotype_caller:
 	input:
@@ -184,7 +184,7 @@ rule haplotype_caller:
 		nodes=1,
 		ppn=20,
 		mem="40gb"
-	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /gatk/gatk HaplotypeCaller --native-pair-hmm-threads {threads} -R {params.reference} -I {input.bam} -ERC GVCF -O {output}"
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /opt/gatk/gatk HaplotypeCaller --native-pair-hmm-threads {threads} -R {params.reference} -I {input.bam} -ERC GVCF -O {output}"
 
 rule combine_variants:
 	input:
@@ -198,7 +198,7 @@ rule combine_variants:
 		nodes=1,
 		ppn=1,
 		mem="50gb"
-	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /gatk/gatk CombineGVCFs -R {params.reference} {params.variants} -O {output}"
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /opt/gatk/gatk CombineGVCFs -R {params.reference} {params.variants} -O {output}"
 
 rule joint_genotype:
 	input:
@@ -211,7 +211,7 @@ rule joint_genotype:
 		nodes=1,
 		ppn=1,
 		mem="50gb"
-	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /gatk/gatk GenotypeGVCFs -R {params.reference} -V {input} -O {output}"
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /opt/gatk/gatk GenotypeGVCFs -R {params.reference} -V {input} -O {output}"
 
 rule select_variants:
 	input:
@@ -224,7 +224,7 @@ rule select_variants:
 		nodes=1,
 		ppn=1,
 		mem="50gb"
-	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /gatk/gatk SelectVariants -R {params.reference} -V {input} --select-type-to-include SNP -O {output}"
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /opt/gatk/gatk SelectVariants -R {params.reference} -V {input} --select-type-to-include SNP -O {output}"
 
 rule filter_variants:
 	input:
@@ -237,7 +237,7 @@ rule filter_variants:
 		nodes=1,
 		ppn=1,
 		mem="50gb"
-	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /gatk/gatk VariantFiltration -R {params.reference} -V {input} -O {output} --filter-name 'Default_recommended' --filter-expression 'QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum  < -12.5 || ReadPosRankSum < -8.0' -O"
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /opt/gatk/gatk VariantFiltration -R {params.reference} -V {input} -O {output} --filter-name 'Default_recommended' --filter-expression 'QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum  < -12.5 || ReadPosRankSum < -8.0' -O"
 
 rule recode_variants:
 	input:

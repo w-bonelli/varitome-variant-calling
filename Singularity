@@ -13,6 +13,8 @@ From: ubuntu:16.04
     add-apt-repository "ppa:openjdk-r/ppa" && \
     apt-get update && apt-get install -y \
     build-essential \
+    automake \
+    autoconf \
     cmake \
     gpp \
     gcc \
@@ -53,7 +55,7 @@ From: ubuntu:16.04
     cd trimmomatic && \
     make && \
     make check && \
-    make install
+    make install INSTALL="/usr/local/bin/"
 
     # sambamba
     cd /opt
