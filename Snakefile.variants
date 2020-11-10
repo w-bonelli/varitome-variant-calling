@@ -23,7 +23,7 @@ rule dump_fastqs:
 	run:
 		for runs in config["accessions"].values():
 			for run in runs:
-				shell("module load Miniconda3/4.7.10 && source activate alignment && ulimit -c unlimited && parallel-fastq-dump --split-files -t {threads} -s {run}")
+				shell("singularity exec shub://w-bonelli/varitome-variant-calling parallel-fastq-dump --split-files -t {threads} -s {run}")
 
 rule merge_fastqs:
 	input: "dump_fastqs.done"
@@ -55,12 +55,7 @@ rule trim_fastqs:
 		nodes=1,
 		ppn=20,
 		mem="40gb"
-	shell:
-		"""
-		module load Trimmomatic/0.36-Java-1.8.0_144
-		ulimit -c unlimited
-		time java -jar /usr/local/apps/eb/Trimmomatic/0.36-Java-1.8.0_144/trimmomatic-0.36.jar PE -threads {threads} {input.one} {input.two} {output.one} {output.one_unpaired} {output.two} {output.two_unpaired} SLIDINGWINDOW:4:20 MINLEN:20
-		"""
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling time java -jar /usr/local/apps/eb/Trimmomatic/0.36-Java-1.8.0_144/trimmomatic-0.36.jar PE -threads {threads} {input.one} {input.two} {output.one} {output.one_unpaired} {output.two} {output.two_unpaired} SLIDINGWINDOW:4:20 MINLEN:20"
 
 rule align:
 	input:
@@ -82,14 +77,12 @@ rule align:
 		mem="100gb"
 	shell:
 		"""
-		module load SpeedSeq/0.1.2-foss-2016b
-		ulimit -c unlimited
 		one=$(readlink -f {input.one})
 		two=$(readlink -f {input.two})
 		mkdir -p align_{wildcards.accession}
 		cp {params.reference} align_{wildcards.accession}/{params.reference}
 		cd align_{wildcards.accession}
-		speedseq align -M 60 -t {threads} -i -R '{params.readgroup}' -o '{wildcards.accession}' {params.reference} $one $two
+		singularity exec shub://w-bonelli/varitome-variant-calling speedseq align -M 60 -t {threads} -i -R '{params.readgroup}' -o '{wildcards.accession}' {params.reference} $one $two
 		"""
 
 rule lumpy_variants:
@@ -106,12 +99,7 @@ rule lumpy_variants:
 		nodes=1,
 		ppn=20,
 		mem="58gb"
-	shell:
-		"""
-		module load LUMPY/0.2.13-foss-2016b
-		ulimit -c unlimited
-		lumpyexpress -B {input.bam} -S {input.splitters} -D {input.discordants} -o {output}
-		"""
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling lumpyexpress -B {input.bam} -S {input.splitters} -D {input.discordants} -o {output}"
 
 rule sort:
 	input:
@@ -125,12 +113,7 @@ rule sort:
 		nodes=1,
 		ppn=1,
 		mem="58gb"
-	shell:
-		"""
-		module load SAMtools/1.9-foss-2016b
-		ulimit -c unlimited
-		samtools sort -m 25G {input} -o {output}
-		"""
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling samtools sort -m 25G {input} -o {output}"
 
 rule create_read_groups:
 	input:
@@ -144,12 +127,7 @@ rule create_read_groups:
 		nodes=1,
 		ppn=1,
 		mem="20gb"
-	shell:
-		"""
-		module load picard/2.16.0-Java-1.8.0_144
-		ulimit -c unlimited
-		java -classpath /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144 -jar /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144/picard.jar AddOrReplaceReadGroups INPUT={input} OUTPUT={output} RGID={wildcards.accession} RGSM={wildcards.accession} RGLB={wildcards.accession} RGPL=ILLUMINA RGPU=ignore
-		"""
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling java -classpath /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144 -jar /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144/picard.jar AddOrReplaceReadGroups INPUT={input} OUTPUT={output} RGID={wildcards.accession} RGSM={wildcards.accession} RGLB={wildcards.accession} RGPL=ILLUMINA RGPU=ignore"
 
 rule mark_duplicates_and_build_index:
 	input:
@@ -166,10 +144,8 @@ rule mark_duplicates_and_build_index:
 		mem="40gb"
 	shell:
 		"""
-		module load picard/2.16.0-Java-1.8.0_144
-		ulimit -c unlimited
-		java -classpath /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144 -jar /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144/picard.jar MarkDuplicates INPUT={input} OUTPUT={output.bam} METRICS_FILE={output.met}
-		java -classpath /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144 -jar /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144/picard.jar BuildBamIndex INPUT={output.bam}
+		singularity exec shub://w-bonelli/varitome-variant-calling java -classpath /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144 -jar /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144/picard.jar MarkDuplicates INPUT={input} OUTPUT={output.bam} METRICS_FILE={output.met}
+		singularity exec shub://w-bonelli/varitome-variant-calling java -classpath /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144 -jar /usr/local/apps/eb/picard/2.16.0-Java-1.8.0_144/picard.jar BuildBamIndex INPUT={output.bam}
 		"""
 
 rule create_reference_index:
@@ -180,12 +156,7 @@ rule create_reference_index:
 		nodes=1,
 		ppn=1,
 		mem="20gb"
-	shell:
-		"""
-		module load SAMtools/1.9-foss-2016b
-		ulimit -c unlimited
-		samtools faidx {params.reference}
-		"""
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling samtools faidx {params.reference}"
 
 rule create_reference_sequence_dictionary:
 	output: f"{config['reference']}.dict"
@@ -195,12 +166,7 @@ rule create_reference_sequence_dictionary:
 		nodes=1,
 		ppn=1,
 		mem="20gb"
-	shell:
-		"""
-		module load GATK/4.1.6.0-GCCcore-8.2.0-Java-1.8
-		ulimit -c unlimited
-		gatk CreateSequenceDictionary -R {params.reference}
-		"""
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling gatk CreateSequenceDictionary -R {params.reference}"
 
 rule haplotype_caller:
 	input:
@@ -214,16 +180,11 @@ rule haplotype_caller:
 	threads: 20
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="100:00:00",
+		walltime="168:00:00",
 		nodes=1,
 		ppn=20,
 		mem="40gb"
-	shell:
-		"""
-		module load GATK/4.1.6.0-GCCcore-8.2.0-Java-1.8
-		ulimit -c unlimited
-		gatk HaplotypeCaller --native-pair-hmm-threads {threads} -R {params.reference} -I {input.bam} -ERC GVCF -O {output}
-		"""
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling gatk HaplotypeCaller --native-pair-hmm-threads {threads} -R {params.reference} -I {input.bam} -ERC GVCF -O {output}"
 
 rule combine_variants:
 	input:
@@ -233,16 +194,11 @@ rule combine_variants:
 	params:
 		reference=f"{config['reference']}.fasta",
 		variants=lambda wildcards, input: " ".join([f"-V {variant}" for variant in input]),
-		walltime="200:00:00",
+		walltime="168:00:00",
 		nodes=1,
 		ppn=1,
 		mem="50gb"
-	shell:
-		"""
-		module load GATK/4.1.6.0-GCCcore-8.2.0-Java-1.8
-		ulimit -c unlimited
-		java -Xmx25g -jar /usr/local/apps/eb/GATK/4.1.6.0-GCCcore-8.2.0-Java-1.8/gatk-package-4.1.6.0-local.jar CombineGVCFs -R {params.reference} {params.variants} -O {output}
-		"""
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling java CombineGVCFs -R {params.reference} {params.variants} -O {output}"
 
 rule joint_genotype:
 	input:
@@ -251,16 +207,11 @@ rule joint_genotype:
 		"combined.genotyped.vcf"
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="120:00:00",
+		walltime="168:00:00",
 		nodes=1,
 		ppn=1,
 		mem="50gb"
-	shell:
-		"""
-		module load GATK/4.1.6.0-GCCcore-8.2.0-Java-1.8
-		ulimit -c unlimited
-		gatk GenotypeGVCFs -R {params.reference} -V {input} -O {output}
-		"""
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /gatk/gatk GenotypeGVCFs -R {params.reference} -V {input} -O {output}"
 
 rule select_variants:
 	input:
@@ -269,16 +220,11 @@ rule select_variants:
 		"combined.genotyped.selected.vcf"
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="120:00:00",
+		walltime="168:00:00",
 		nodes=1,
 		ppn=1,
 		mem="50gb"
-	shell:
-		"""
-		module load GATK/4.1.6.0-GCCcore-8.2.0-Java-1.8
-		ulimit -c unlimited
-		gatk SelectVariants -R {params.reference} -V {input} --select-type-to-include SNP -O {output}
-		"""
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /gatk/gatk SelectVariants -R {params.reference} -V {input} --select-type-to-include SNP -O {output}"
 
 rule filter_variants:
 	input:
@@ -287,16 +233,11 @@ rule filter_variants:
 		"combined.genotyped.selected.filtered.vcf"
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="120:00:00",
+		walltime="168:00:00",
 		nodes=1,
 		ppn=1,
 		mem="50gb"
-	shell:
-		"""
-		module load GATK/4.1.6.0-GCCcore-8.2.0-Java-1.8
-		ulimit -c unlimited
-		gatk VariantFiltration -R {params.reference} -V {input} -O {output} --filter-name 'Default_recommended' --filter-expression 'QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum  < -12.5 || ReadPosRankSum < -8.0' -O
-		"""
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /gatk/gatk VariantFiltration -R {params.reference} -V {input} -O {output} --filter-name 'Default_recommended' --filter-expression 'QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum  < -12.5 || ReadPosRankSum < -8.0' -O"
 
 rule recode_variants:
 	input:
@@ -305,14 +246,9 @@ rule recode_variants:
 		"combined.genotyped.selected.filtered.recoded.vcf"
 	params:
 		reference=f"{config['reference']}.fasta",
-		walltime="120:00:00",
+		walltime="168:00:00",
 		nodes=1,
 		ppn=1,
 		mem="50gb"
-	shell:
-		"""
-		module load VCFtools/0.1.15-foss-2016b-Perl-5.24.1
-		ulimit -c unlimited
-		vcftools --vcf {input} --remove-filtered-all --recode  --max-missing 1 -c > {output}
-		"""
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling vcftools --vcf {input} --remove-filtered-all --recode  --max-missing 1 -c > {output}"
 

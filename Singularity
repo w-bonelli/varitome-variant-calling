@@ -42,28 +42,41 @@ From: ubuntu:16.04
     apt-get install git-lfs
 
     # gatk
+    cd /opt
     git clone https://github.com/broadinstitute/gatk.git && \
     cd gatk && \
-    ./gradlew bundle
+    ./gradlew bundle && \
+
+    # trimmomatic
+    cd /opt
+    git clone https://github.com/timflutre/trimmomatic.git && \
+    cd trimmomatic && \
+    make && \
+    make check && \
+    make install
 
     # sambamba
+    cd /opt
     curl -OL https://github.com/biod/sambamba/releases/download/v0.6.7/sambamba_v0.6.7_linux.tar.bz2 && \
     tar -xvf sambamba_v0.6.7_linux.tar.bz2 && \
     cp sambamba /usr/local/bin/
 
     # samblaster
+    cd /opt
     git clone git://github.com/GregoryFaust/samblaster.git && \
     cd samblaster && \
     make && \
     cp samblaster /usr/local/bin/
 
     # samtools
+    cd /opt
     curl -OL https://github.com/samtools/samtools/releases/download/1.8/samtools-1.8.tar.bz2 && \
     tar -xvf samtools-1.8.tar.bz2 && \
     cd samtools-1.8 && \
     ./configure && make && make install
 
     # vcftools
+    cd /opt
     git clone https://github.com/vcftools/vcftools.git && \
     cd vcftools && \
     ./autogen.sh && \
@@ -72,6 +85,7 @@ From: ubuntu:16.04
     make install
 
     # bedtools
+    cd /opt
     curl -OL https://github.com/arq5x/bedtools2/releases/download/v2.27.1/bedtools-2.27.1.tar.gz && \
     tar -xvf bedtools-2.27.1.tar.gz && \
     cd bedtools2 && \
@@ -79,16 +93,19 @@ From: ubuntu:16.04
     cp bin/* /usr/local/bin/
 
     # picard
+    cd /opt
     curl -OL https://github.com/broadinstitute/picard/releases/download/2.18.5/picard.jar && \
     mv picard.jar /usr/local/bin
 
     # lumpy
+    cd /opt
     git clone --recursive https://github.com/arq5x/lumpy-sv && \
     cd lumpy-sv && \
     make && \
     cp bin/* /usr/local/bin/. &&
 
     # speedseq
+    cd /opt
     git clone --recursive https://github.com/hall-lab/speedseq && \
     cd speedseq && \
     make
