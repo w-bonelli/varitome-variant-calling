@@ -184,7 +184,7 @@ rule haplotype_caller:
 		nodes=1,
 		ppn=20,
 		mem="40gb"
-	shell: "singularity exec shub://w-bonelli/varitome-variant-calling gatk HaplotypeCaller --native-pair-hmm-threads {threads} -R {params.reference} -I {input.bam} -ERC GVCF -O {output}"
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /gatk/gatk HaplotypeCaller --native-pair-hmm-threads {threads} -R {params.reference} -I {input.bam} -ERC GVCF -O {output}"
 
 rule combine_variants:
 	input:
@@ -198,7 +198,7 @@ rule combine_variants:
 		nodes=1,
 		ppn=1,
 		mem="50gb"
-	shell: "singularity exec shub://w-bonelli/varitome-variant-calling java CombineGVCFs -R {params.reference} {params.variants} -O {output}"
+	shell: "singularity exec shub://w-bonelli/varitome-variant-calling /gatk/gatk CombineGVCFs -R {params.reference} {params.variants} -O {output}"
 
 rule joint_genotype:
 	input:
