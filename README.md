@@ -130,13 +130,13 @@ To submit the pipeline to Sapelo2 as a batch job, simply embed the command above
 
 ##### Sample Job Scripts
 
-Depending on the size of your dataset you may need to tune cluster resources on a per-rule basis.
+Depending on the size of your dataset you may need to tune cluster resources on a per-rule basis. If your dataset is large, you may need to either use your cluster's high-memory queue or split the dataset into chunks (`combine_variants` and subsequent rules are memory-hungry, since they operate on all variants at once).
 
 **Torque/Moab (PBS)**
 
 ```
 #PBS -S /bin/bash
-#PBS -N Snakemato
+#PBS -N varitome-variants
 #PBS -q batch
 #PBS -l nodes=1:ppn=1
 #PBS -l walltime=150:00:00
@@ -157,7 +157,26 @@ snakemake --snakefile Snakefile.variants  --latency-wait 30 --restart-times 2 --
 **Slurm**
 
 ```
-TODO
+#!/bin/bash
+#SBATCH --job-name=varitome-variants
+#SBATCH --partition=batch
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=20gb
+#SBATCH --time=168:00:00
+#SBATCH --mail-type==END,FAIL
+#SBATCH --mail-user=<your email address>
+#SBATCH --output=varitome.variants.%j.out
+#SBATCH --error=varitome.variants.%j.err
+
+cd $SLURM_SUBMIT_DIR
+
+module load Anaconda3/2020.02
+source activate alignment
+
+ulimit -c unlimited
+
+snakemake --latency-wait 30 --restart-times 2 --configfile "config.json" --jobs 500 --cluster "sbatch --time={params.walltime} --ntasks={params.nodes} --cpus-per-task={params.ppn} --mem={params.mem} --mail-type=END,FAIL --mail-user=<your email address>"
 ```
 
 ### Read Depths
@@ -202,11 +221,13 @@ Several command line arguments are passed to Snakemake:
 
 These options can be reconfigured as needed. Note that if the pipeline has run previously in the same directory, you may need to execute a dry run with extra flag `--unlock` to release the directory lock before rerunning. Alternatively use `--nolock` to ignore directory locks.
 
-##### Torque/MOAB
+##### Sample Job Scripts
+
+**Torque/MOAB**
 
 ```bash
 #PBS -S /bin/bash
-#PBS -N depths
+#PBS -N varitome-depths
 #PBS -q batch
 #PBS -l nodes=1:ppn=1
 #PBS -l walltime=24:00:00
@@ -221,7 +242,32 @@ source activate <your conda environment>
 
 ulimit -c unlimited
 
-snakemake --snakefile Snakefile.depths --configfile depths_config.json --latency-wait 30 --restart-times 2 --jobs 500 --cluster "qsub -l walltime={params.walltime} -l nodes={params.nodes}:ppn={params.ppn} -l mem={params.mem} -M wbonelli@uga.edu -m ae"
+snakemake --snakefile Snakefile.depths --configfile depths_config.json --latency-wait 30 --restart-times 2 --jobs 500 --cluster "qsub -l walltime={params.walltime} -l nodes={params.nodes}:ppn={params.ppn} -l mem={params.mem} -M <your email address> -m ae"
+```
+
+**Slurm**
+
+```
+#!/bin/bash
+#SBATCH --job-name=varitome-depths
+#SBATCH --partition=batch
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=20gb
+#SBATCH --time=168:00:00
+#SBATCH --mail-type==END,FAIL
+#SBATCH --mail-user=<your email address>
+#SBATCH --output=varitome.depths.%j.out
+#SBATCH --error=varitome.depths.%j.err
+
+cd $SLURM_SUBMIT_DIR
+
+module load Anaconda3/2020.02
+source activate alignment
+
+ulimit -c unlimited
+
+"snakemake --snakefile Snakefile.depths --configfile depths_config.json --latency-wait 30 --restart-times 2 --jobs 500 --cluster "qsub -l walltime={params.walltime} -l nodes={params.nodes}:ppn={params.ppn} -l mem={params.mem} -M <your email address> -m ae"
 ```
 
 ## Utils
